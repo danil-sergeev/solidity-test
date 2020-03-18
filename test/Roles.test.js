@@ -30,4 +30,18 @@ contract("Roles", accounts => {
             assert.isOk(res);
         });
     });
+
+
+    describe("Overflow tests", async () => {
+        it('should test addRole overflow', async () => {
+            for (let i = 0; i < 255; i++ ) {
+                await roles.addRole(`test${i}`);
+            }
+            await roles.addRole('error');
+            const res = await roles.checkStoreRoleNames(0);
+            assert.equal(res, 'error');
+            assert.notEqual(res, 'test0');
+        });
+    });
+
 });

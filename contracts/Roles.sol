@@ -10,6 +10,7 @@ library RolesLib {
     }
 
     struct Store {
+        // всего может существовать 256 ролей при добавлении новой роли, будет оверфлоу
         uint8 count;
         mapping (uint8 => string) roleNames; // from 1 to Inf
         mapping (string => Role) roles;
@@ -94,5 +95,9 @@ contract Roles {
 
     function setData(string calldata roleName, address account, bytes calldata data) external {
         RolesLib._setData(_store, roleName, account, data);
+    }
+
+    function checkStoreRoleNames(uint8 num) external view returns(string memory) {
+        return _store.roleNames[num];
     }
 }
