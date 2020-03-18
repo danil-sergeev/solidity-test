@@ -1,3 +1,4 @@
+// TODO: тесты на reentrancy, тесты на работоспобность
 pragma solidity >=0.4.0 <0.7.0;
 
 library RolesLib {
@@ -10,14 +11,16 @@ library RolesLib {
     }
 
     struct Store {
-        // всего может существовать 256 ролей при добавлении новой роли, будет оверфлоу
+        // всего может существовать 255 ролей при добавлении новой роли, будет оверфлоу
         uint8 count;
         mapping (uint8 => string) roleNames; // from 1 to Inf
         mapping (string => Role) roles;
     }
 
     struct Subject {
+        // не имеет смысла на этом уровне абстракции, кроме метода haveRollAndAccess, но нигде не используется
         uint8 accessLevel;
+        // динамический массив, неограничен по размерам, потому можно сделать DoS
         bytes data;
     }
 
@@ -58,18 +61,19 @@ library RolesLib {
         return s.roles[r].accToNum[account] > 0;
     }
 
+    // метод лучше сделать external потому что он нигде внутри библиотеки не используется
     function haveRoleAndAccess(Store storage s, string memory r, address account, uint8 requiredLevel) public view returns (bool) {
         require(account != address(0), "Roles: account is the zero address");
 
         return exist(s, r, account)
-        && (s.roles[r].accToNum[account] > 0)
+        && (s.roles[r].accToNum[account] > 0) // дублирует верхний вызов метода
         && (s.roles[r].subjects[account].accessLevel >= requiredLevel);
     }
 
     function _setData(Store storage s, string memory r, address account, bytes memory data) internal {
         require(exist(s, r, account), "Roles: account does not have a role");
-
         s.roles[r].subjects[account].data = data;
+        // тут не хватает haveRoleAndAccess
     }
 
 }

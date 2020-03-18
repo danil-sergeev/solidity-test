@@ -5,6 +5,7 @@ const { shouldThrow } = require('../utils');
 contract("Roles", accounts => {
 
     let roles;
+    let [acc] = accounts;
 
     beforeEach(async () => {
         roles = await Roles.deployed();
@@ -17,15 +18,15 @@ contract("Roles", accounts => {
         it('should test addSubject DoS', async () => {
             await roles.addRole('test');
             const res = await shouldThrow(
-                roles.addSubject('test', accounts[0], 0, bytesDoSFactory())
+                roles.addSubject('test', acc, 0, bytesDoSFactory())
             );
             assert.isOk(res);
         });
         it("should test setData DoS", async () => {
             await roles.addRole('test');
-            await roles.addSubject('test', accounts[0], 0, '0x0');
+            await roles.addSubject('test', acc, 0, '0x0');
             const res = await shouldThrow(
-                roles.setData('test', accounts[0], bytesDoSFactory())
+                roles.setData('test', acc, bytesDoSFactory())
             );
             assert.isOk(res);
         });
@@ -44,4 +45,11 @@ contract("Roles", accounts => {
         });
     });
 
+    // describe("Exploit tests", async () => {
+    //     it("some who has role but don't have access can set data", async () => {
+    //         const [] = await Promise.all([
+    //
+    //         ]);
+    //     });
+    // });
 });
