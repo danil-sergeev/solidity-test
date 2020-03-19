@@ -30,7 +30,7 @@ library RolesLib {
     }
 
     function _addSubject(Store storage s, string memory r, address account, uint8 accessLevel, bytes memory data) internal {
-        // TODO: uncomment! require(!exist(s, r, account), "Roles: account already has role");
+        require(!exist(s, r, account), "Roles: account already has role");
 
         s.roles[r].count += 1;
 
@@ -103,5 +103,26 @@ contract Roles {
 
     function checkStoreRoleNames(uint8 num) external view returns(string memory) {
         return _store.roleNames[num];
+    }
+
+    function getStoreCount() external view returns (uint) {
+        return _store.count;
+    }
+
+    function getRoleCount(string calldata role) external view returns (uint) {
+        return _store.roles[role].count;
+    }
+
+    function getRoleNumToAcc(string calldata role, uint n) external view returns (address) {
+        return _store.roles[role].numToAcc[n];
+    }
+
+    function getRoleAccToNum(string calldata role, address acc) external view returns (uint) {
+        return _store.roles[role].accToNum[acc];
+    }
+
+    function getRoleSubjects(string calldata role, address acc) external view returns (uint8 accessLevel, bytes memory data) {
+        RolesLib.Subject memory subject = _store.roles[role].subjects[acc];
+        return (subject.accessLevel, subject.data);
     }
 }
