@@ -45,11 +45,5 @@ contract("Roles", accounts => {
         });
     });
 
-    // describe("Exploit tests", async () => {
-    //     it("some who has role but don't have access can set data", async () => {
-    //         const [] = await Promise.all([
-    //
-    //         ]);
-    //     });
-    // });
+
 });
